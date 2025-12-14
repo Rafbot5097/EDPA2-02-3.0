@@ -5,7 +5,7 @@ import java.util.*;
 public class myGraphBuilder {
     static final String PATH = "C:\\Users\\pcama\\Desktop\\Curso25-26\\Primer Cuatrimestre\\EDA\\Assignment05\\assign05\\bikeways.csv"; //Path to .csv
     private static final Scanner input = new Scanner(System.in);
-
+    private static int VirtualID = 4001;
     public  static void main(String[] args) throws IOException {
         try {
             SequentialFile<BikewaySegment> file = new SequentialFile<>(PATH, ";");
@@ -124,6 +124,7 @@ public class myGraphBuilder {
                 while (itV.hasNext()){
                     System.out.println(itV.next());
                 }
+                displayPath(g, bfs);
                 //System.out.println(bfs);
 
                 break;
@@ -144,7 +145,7 @@ public class myGraphBuilder {
 
         Vertex<Intersection> s = gp.getVertex(start.getID());
         Vertex<Intersection> f = gp.getVertex(finish.getID());
-
+        boolean found = false;
 
         if(!gp.exists(s) || !gp.exists(f)){
             System.out.println("ERROR: Nodes not in graph.");
@@ -158,7 +159,7 @@ public class myGraphBuilder {
         q.add(s);
         visited.add(s);
 
-        while (!q.isEmpty()) {
+        while (!q.isEmpty() && !found) {
 
             Vertex current = q.poll();
 
@@ -182,7 +183,7 @@ public class myGraphBuilder {
         }
 
 
-        if (!parent.containsKey(f)) return null;
+        
 
         // reconstruir camino
         //LinkedList<Vertex> path = new LinkedList<>();
@@ -196,6 +197,134 @@ public class myGraphBuilder {
 
         return path;
     }
+    public static void displayPath(Graph g, List<Vertex> path) {
+        if (path == null || path.isEmpty()) {
+            System.out.println("Path not found");
+            return;
+        }
 
+        System.out.println("\n=== FOUND PATH === ");
+        // -1 because last size is a vertex, not an edge
+        System.out.println("Total segment in path: " + (path.size() - 1));
+        Set<String> surfaceTypes = new HashSet<>();
+        double totalDistance = 0;
+        
+        System.out.println("Starting point: " + path.get(0).getData());
+        
+        
+        for (int i = 0; i < path.size() - 1; i++) {
+            Vertex<Intersection> u = path.get(i);
+            Vertex<Intersection> v = path.get(i + 1);
+            Edge<BikewaySegment> edge = findEdgeBetween(g, u, v);
+            
+            if (edge != null) {
+                BikewaySegment segment = edge.getDecorator().getData();
+                System.out.println("\n Segment " + (i + 1) + ":");
+                System.out.println("ID: " + segment.ID);
+                System.out.println("Name: " + segment.routeName);
+                System.out.println("Distance: " + segment.segmentLength + " m");
+                System.out.println(v.getData());
+                totalDistance += segment.segmentLength;
+                surfaceTypes.add(segment.surfaceType);
+            }
+        }
+        
+        
+        System.out.println("\n=== SUMMARY ===");
+        System.out.println("TOTAL DISTANCE: " +  totalDistance + " m");
+        System.out.println("Surface types: ");
+        for (String surface : surfaceTypes) {
+            System.out.println(surface);
+        }
+    }
 
+    private static Edge<BikewaySegment> findEdgeBetween(Graph g, Vertex u, Vertex v) {
+        Iterator<Edge<BikewaySegment>> it = g.incidentEdges(u);
+        while (it.hasNext()) {
+            Edge<BikewaySegment> edge = it.next();
+            Vertex opposite = g.opposite(u, edge);
+            if (opposite.equals(v)) {
+                return edge;
+            }
+        }
+        return null;
+    }
+
+    public static void createVirtualSegments(Graph g, Intersection start, Intersection finish) {
+        String[] startCoords = start.getID().split(",");
+        String[] finishCoords = finish.getID().split(",");
+        
+        double startLon = Double.parseDouble(startCoords[0]);
+        double startLat = Double.parseDouble(startCoords[1]);
+        double finishLon = Double.parseDouble(finishCoords[0]);
+        double finishLat = Double.parseDouble(finishCoords[1]);
+        
+        double avgLon = (startLon + finishLon) / 2.0;
+        double avgLat = (startLat + finishLat) / 2.0;
+        
+        String avgCoords = avgLon + "," + avgLat;
+        Intersection midPoint = new Intersection(avgCoords);
+        
+        if (g.exists(g.getVertex(midPoint.getID()))) {
+            System.out.println("Can't create an intersection because it exist already");
+            return;
+        }
+        
+        
+        Vertex<Intersection> mid = g.insertVertex(midPoint);
+        Vertex<Intersection> s = g.getVertex(start.getID());
+        Vertex<Intersection> f = g.getVertex(finish.getID());
+        
+        
+        double dist1 = calculateDistance(startLon, startLat, avgLon, avgLat);
+        double dist2 = calculateDistance(avgLon, avgLat, finishLon, finishLat);
+        
+        
+        BikewaySegment virtual1 = createVirtualSegment(VirtualID++, dist1);
+        BikewaySegment virtual2 = createVirtualSegment(VirtualID++, dist2);
+        
+        
+        Edge<BikewaySegment> e1 = g.insertEdge(s, mid);
+        //Without the {} does not work, don't know why
+        e1.setDecorator(new Decorator<BikewaySegment>(virtual1) {});
+        
+        Edge<BikewaySegment> e2 = g.insertEdge(mid, f);
+        e2.setDecorator(new Decorator<BikewaySegment>(virtual2) {});
+        
+        
+        System.out.println("\n=== VIRTUAL SEGMENTS ===");
+        System.out.println("Mid Point : " + avgCoords);
+        System.out.println("Virtual segment 1: ID " + virtual1.ID + " " + dist1 + " m");
+        System.out.println("Virtual segment 2: ID " + virtual2.ID + " " + dist2 + " m");
+        System.out.println("Vertex: " + g.getN());
+        System.out.println("Edges: " + g.getM());
+    }
+    
+    
+    private static BikewaySegment createVirtualSegment(int id, double length) {
+        BikewaySegment virtual = new BikewaySegment();
+        virtual.ID = id;
+        virtual.routeName = "VIRTUAL";
+        virtual.streetName = "VIRTUAL";
+        virtual.bikewayType = "VIRTUAL";
+        virtual.speedLimit = 0;
+        virtual.surfaceType = "VIRTUAL";
+        virtual.snowRemoval = false;
+        virtual.segmentLength = length;
+        virtual.yearOfConstruction = 0;
+        virtual.setVirtual(true); // NUEVO: Marcar como virtual
+        return virtual;
+    }
+    
+    
+    private static double calculateDistance(double lon1, double lat1, double lon2, double lat2) {
+        double R = 6371000; 
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                   Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                   Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
 }
