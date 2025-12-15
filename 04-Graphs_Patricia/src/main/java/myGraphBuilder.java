@@ -2,16 +2,8 @@ import graphsDS_ESI_UCLM_v2.*;
 import java.io.IOException;
 import java.util.*;
 
-/*********************************************************************
-*
-* Class Name: myGraphBuilder
-* Author/s name: PC, RCR, LD - Group 02
-* Release/Creation date: 07/12/2025
-* Class description: main class for assignment 04
-*
-**********************************************************************/
 public class myGraphBuilder {
-    static final String PATH = "C:\\Users\\pcama\\Desktop\\Curso25-26\\Primer Cuatrimestre\\EDA\\Assignment05\\assign05\\bikeways.csv"; //Path to .csv
+    static final String PATH = "C:\\Users\\pcama\\Downloads\\EDPA2-02-3.0-master\\EDPA2-02-3.0-master\\04-Graphs_Patricia\\src\\main\\resources\\bikeways2.csv"; //Path to .csv
     private static final Scanner input = new Scanner(System.in);
     private static int VirtualID = 4001;
     public  static void main(String[] args) throws IOException {
@@ -51,17 +43,7 @@ public class myGraphBuilder {
         }
 
     }
-    /*********************************************************************
-    *
-    * Method Name: subdivideLists
-    * Name of the original author: PC
-    * Description of the Method: Subdivides original list into two, depending on which day 
-    * and stage the artists play in
-    * Calling arguments: LinkedList<Artist> that will be subdivided
-    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
-    * Required files: artist.csv must be opened
-    *
-    ***********************************************************************/
+
     public static void addToGraph(BikewaySegment segment, Graph g){
         Edge<BikewaySegment> bikeSegment;
         Vertex<Intersection> startPoint, endPoint;
@@ -76,17 +58,7 @@ public class myGraphBuilder {
         bikeSegment.setDecorator(new Decorator<BikewaySegment>(segment) {}); //El {} implica que es anónimo
 
     }
-    /*********************************************************************
-    *
-    * Method Name: subdivideLists
-    * Name of the original author: PC
-    * Description of the Method: Subdivides original list into two, depending on which day 
-    * and stage the artists play in
-    * Calling arguments: LinkedList<Artist> that will be subdivided
-    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
-    * Required files: artist.csv must be opened
-    *
-    ***********************************************************************/
+
     public static void processOptions(Graph g){
         String entrada;
         boolean finished = false;
@@ -94,33 +66,36 @@ public class myGraphBuilder {
         while (!finished) {
             System.out.println("Please, enter an option and the commands: ");
             entrada = input.nextLine();
-            char option = entrada.charAt(0);
-            if (option == 'e') {
-                System.out.println("Ending program...");
-                finished = true;
-            } else if (option == 'b' || option == 's' || option == 'd') {
-                String[] split = entrada.trim().split("\\s+");
-                Intersection coord1 = new Intersection(split[1]);
-                Intersection coord2 = new Intersection(split[2]);
 
-                displayMenu(g, option, coord1, coord2, finished);
-            }
-            else{
-                System.out.println("That option is not supported ");
+            if(!entrada.isEmpty()) {
+                char option = entrada.charAt(0);
+                if (option == 'e') {
+                    System.out.println("Ending program...");
+                    finished = true;
+                } else if (option == 'b' || option == 's' || option == 'd') {
+                    String[] split = entrada.trim().split("\\s+");
+                    if(split.length != 3) {
+                        System.out.println("Invalid number of arguments");
+                    }
+                    else {
+                        try {
+                            Intersection coord1 = new Intersection(split[1]);
+                            Intersection coord2 = new Intersection(split[2]);
+                            manageMenu(g, option, coord1, coord2, finished);
+                        } catch (Exception e){
+                            System.out.println("Invalid coordinates");
+                        }
+                    }
+                }
+                else{
+                    System.out.println("That option is not supported ");
+                }
+            } else{
+                System.out.println("Empty input");
             }
         }
     }
-    /*********************************************************************
-    *
-    * Method Name: subdivideLists
-    * Name of the original author: PC
-    * Description of the Method: Subdivides original list into two, depending on which day 
-    * and stage the artists play in
-    * Calling arguments: LinkedList<Artist> that will be subdivided
-    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
-    * Required files: artist.csv must be opened
-    *
-    ***********************************************************************/
+
     public static int gradoVertice(Graph g, int limit){
         //Searches all nodes of the graph and counts how many are greater than a certain parameter
         int degGreater = 0;
@@ -142,17 +117,7 @@ public class myGraphBuilder {
         }
         return degGreater;
     }
-    /*********************************************************************
-    *
-    * Method Name: subdivideLists
-    * Name of the original author: PC
-    * Description of the Method: Subdivides original list into two, depending on which day 
-    * and stage the artists play in
-    * Calling arguments: LinkedList<Artist> that will be subdivided
-    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
-    * Required files: artist.csv must be opened
-    *
-    ***********************************************************************/
+
     public static void showMenu(){
         System.out.printf("--OPTIONS--\n");
         System.out.printf("b <lat,long> <lat,long>: Finds shortest path between the given coordinates. \n");
@@ -163,40 +128,39 @@ public class myGraphBuilder {
         System.out.printf("e: Exits the program. \n");
         System.out.printf("-----------\n");
     }
-    /*********************************************************************
-    *
-    * Method Name: subdivideLists
-    * Name of the original author: PC
-    * Description of the Method: Subdivides original list into two, depending on which day 
-    * and stage the artists play in
-    * Calling arguments: LinkedList<Artist> that will be subdivided
-    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
-    * Required files: artist.csv must be opened
-    *
-    ***********************************************************************/
-    public static boolean displayMenu(Graph g, char option, Intersection coord1, Intersection coord2, boolean finished) {
+
+    public static boolean manageMenu(Graph g, char option, Intersection coord1, Intersection coord2, boolean finished) {
         switch (option) {
             case 'b':
-                List<Vertex> bfs = BFS(g, coord1, coord2);
+                List<Vertex> bfs = BFS(g, coord1, coord2, false);
                 if (bfs == null || bfs.size() == 1) {
                     System.out.println("Path not found, virtual segments will be created");
                     createVirtualSegments(g, coord1, coord2);
-                    //we call again the BFS so we don't have to call the "b" option again
-                    bfs = BFS(g, coord1, coord2);
+                    //we call the BFS so we don't have to call the "b" option again
+                    bfs = BFS(g, coord1, coord2, false);
                     if (bfs != null && bfs.size() > 1) {
                         displayPath(g, bfs);
                     }
                 } else {
                     displayPath(g, bfs);
                 }
-                //System.out.println(bfs);
-
                 break;
             case 's':
-
+                List<Vertex> bfsSnow = BFS(g, coord1, coord2, true);
+                if (bfsSnow == null || bfsSnow.size() == 1) {
+                    System.out.println("Path not found, virtual segments will not be created. ");
+                    // As virtual paths are basically blank, we wont create one as it wont have snow removal.
+                } else {
+                    displayPath(g, bfsSnow);
+                }
                 break;
             case 'd':
-
+                List<Vertex> dfs = DFS(g, coord1, coord2);
+                if (dfs == null || dfs.size() == 1) {
+                    System.out.println("Path not found.");
+                } else {
+                    displayPath(g, dfs);
+                }
                 break;
             default:
                 System.out.println("ERROR, option not available");
@@ -204,19 +168,58 @@ public class myGraphBuilder {
         }
         return finished;
     }
-    /*********************************************************************
-    *
-    * Method Name: subdivideLists
-    * Name of the original author: PC
-    * Description of the Method: Subdivides original list into two, depending on which day 
-    * and stage the artists play in
-    * Calling arguments: LinkedList<Artist> that will be subdivided
-    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
-    * Required files: artist.csv must be opened
-    *
-    ***********************************************************************/
-    public static List BFS(Graph gp, Intersection start, Intersection finish){
 
+    public static List DFS(Graph gp, Intersection start, Intersection finish){
+        Vertex<Intersection> s = gp.getVertex(start.getID());
+        Vertex<Intersection> f = gp.getVertex(finish.getID());
+        boolean found = false;
+        if(!gp.exists(s) || !gp.exists(f)){
+            System.out.println("ERROR: Nodes not in graph.");
+            return null;
+        }
+        Stack<Vertex> st = new Stack<>();
+        Map<Vertex, Vertex> parent = new HashMap<>();
+        Set<Vertex> visited = new HashSet<>();
+
+        st.push(s);
+        visited.add(s);
+
+        while (!st.isEmpty() && !found) {
+
+            Vertex current = st.pop();
+
+            if (current.equals(f))
+                break;
+            Iterator<Edge<BikewaySegment>> it = gp.incidentEdges(current);
+            while (it.hasNext()) {
+                Edge<BikewaySegment> e = it.next();
+                BikewaySegment segment = e.getDecorator().getData();
+                if (segment.speedLimit != 30 || segment.bikewayType.equals("VIRTUAL")) {
+                    //As virtual paths are blank, they have no speed limit, but we added the comparison so it is more readeable
+                    continue; // Skip invalid segment 
+                }
+                Vertex<Intersection> neighbor = gp.opposite(current, e);
+
+                if (!visited.contains(neighbor)) {
+                    visited.add(neighbor);
+                    parent.put(neighbor, current);
+                    st.push(neighbor);
+                }
+            }
+        }
+        // reconstruir camino
+        LinkedList<Vertex<Intersection>> path = new LinkedList<>();
+
+        Vertex p = f;
+        while (p != null) {
+            path.addFirst(p);
+            p = parent.get(p);
+        }
+        return path;
+    }
+
+
+    public static List BFS(Graph gp, Intersection start, Intersection finish, Boolean snow){
         Vertex<Intersection> s = gp.getVertex(start.getID());
         Vertex<Intersection> f = gp.getVertex(finish.getID());
         boolean found = false;
@@ -246,6 +249,11 @@ public class myGraphBuilder {
             while (it.hasNext()) {
                 //Vertex neighbor = it.next();
                 Edge<BikewaySegment> e = it.next();
+                BikewaySegment segment = e.getDecorator().getData();
+                if (snow && (!segment.bikewayType.equals("Protected Bike Lanes") || !segment.snowRemoval)) {
+                    continue; // Skip invalid segment 
+                }
+
                 Vertex<Intersection> neighbor = gp.opposite(current, e);
 
                 if (!visited.contains(neighbor)) {
@@ -255,9 +263,6 @@ public class myGraphBuilder {
                 }
             }
         }
-
-
-        
 
         // reconstruir camino
         //LinkedList<Vertex> path = new LinkedList<>();
@@ -271,17 +276,6 @@ public class myGraphBuilder {
 
         return path;
     }
-    /*********************************************************************
-    *
-    * Method Name: subdivideLists
-    * Name of the original author: PC
-    * Description of the Method: Subdivides original list into two, depending on which day 
-    * and stage the artists play in
-    * Calling arguments: LinkedList<Artist> that will be subdivided
-    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
-    * Required files: artist.csv must be opened
-    *
-    ***********************************************************************/
     public static void displayPath(Graph g, List<Vertex> path) {
         if (path == null || path.isEmpty()) {
             System.out.println("Path not found");
@@ -304,11 +298,11 @@ public class myGraphBuilder {
             
             if (edge != null) {
                 BikewaySegment segment = edge.getDecorator().getData();
-                System.out.println("\n Segment " + (i + 1) + ":");
+                System.out.println("\n ---- Segment " + (i + 1) + " ---- ");
                 System.out.println("ID: " + segment.ID);
                 System.out.println("Name: " + segment.routeName);
                 System.out.println("Distance: " + segment.segmentLength + " m");
-                System.out.println(v.getData());
+                System.out.println("Starting intersection: " + u.getData() + " Finishing intersection: " + v.getData());
                 totalDistance += segment.segmentLength;
                 surfaceTypes.add(segment.surfaceType);
             }
@@ -322,17 +316,7 @@ public class myGraphBuilder {
             System.out.println(surface);
         }
     }
-    /*********************************************************************
-    *
-    * Method Name: subdivideLists
-    * Name of the original author: PC
-    * Description of the Method: Subdivides original list into two, depending on which day 
-    * and stage the artists play in
-    * Calling arguments: LinkedList<Artist> that will be subdivided
-    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
-    * Required files: artist.csv must be opened
-    *
-    ***********************************************************************/
+
     private static Edge<BikewaySegment> findEdgeBetween(Graph g, Vertex u, Vertex v) {
         Iterator<Edge<BikewaySegment>> it = g.incidentEdges(u);
         while (it.hasNext()) {
@@ -348,23 +332,23 @@ public class myGraphBuilder {
     public static void createVirtualSegments(Graph g, Intersection start, Intersection finish) {
         String[] startCoords = start.getID().split(",");
         String[] finishCoords = finish.getID().split(",");
-        
+
         double startLon = Double.parseDouble(startCoords[0]);
         double startLat = Double.parseDouble(startCoords[1]);
         double finishLon = Double.parseDouble(finishCoords[0]);
         double finishLat = Double.parseDouble(finishCoords[1]);
-        
+
         double avgLon = (startLon + finishLon) / 2.0;
         double avgLat = (startLat + finishLat) / 2.0;
-        
+
         String avgCoords = avgLon + "," + avgLat;
         Intersection midPoint = new Intersection(avgCoords);
         
-        if (g.exists(g.getVertex(midPoint.getID()))) {
-            System.out.println("Can't create an intersection because it exist already");
+       Vertex<Intersection> existingMid = g.getVertex(midPoint.getID());
+        if (existingMid != null) {
+            System.out.println("Cannot create an intersection because it already exists");
             return;
         }
-        
         
         Vertex<Intersection> mid = g.insertVertex(midPoint);
         Vertex<Intersection> s = g.getVertex(start.getID());
@@ -380,13 +364,13 @@ public class myGraphBuilder {
         
         
         Edge<BikewaySegment> e1 = g.insertEdge(s, mid);
-        //Without the {} does not work, don't know why
+        // Without the {} does not work, don't know why  -> {} means its anonymous, as Decorator
+        // cannot be instantiated, this is a way to make it work.
         e1.setDecorator(new Decorator<BikewaySegment>(virtual1) {});
         
         Edge<BikewaySegment> e2 = g.insertEdge(mid, f);
         e2.setDecorator(new Decorator<BikewaySegment>(virtual2) {});
-        
-        
+
         System.out.println("\n=== VIRTUAL SEGMENTS ===");
         System.out.println("Mid Point : " + avgCoords);
         System.out.println("Virtual segment 1: ID " + virtual1.ID + " " + dist1 + " m");
@@ -394,18 +378,7 @@ public class myGraphBuilder {
         System.out.println("Vertex: " + g.getN());
         System.out.println("Edges: " + g.getM());
     }
-    
-    /*********************************************************************
-    *
-    * Method Name: subdivideLists
-    * Name of the original author: PC
-    * Description of the Method: Subdivides original list into two, depending on which day 
-    * and stage the artists play in
-    * Calling arguments: LinkedList<Artist> that will be subdivided
-    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
-    * Required files: artist.csv must be opened
-    *
-    ***********************************************************************/
+
     private static BikewaySegment createVirtualSegment(int id, double length) {
         BikewaySegment virtual = new BikewaySegment();
         virtual.ID = id;
@@ -417,10 +390,8 @@ public class myGraphBuilder {
         virtual.snowRemoval = false;
         virtual.segmentLength = length;
         virtual.yearOfConstruction = 0;
-        virtual.setVirtual(true); // NUEVO: Marcar como virtual
+        virtual.setVirtual(true); // Marcar como virtual
         return virtual;
     }
-    
-    
-    
+
 }
