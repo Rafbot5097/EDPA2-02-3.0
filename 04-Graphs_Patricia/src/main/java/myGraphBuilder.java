@@ -2,6 +2,14 @@ import graphsDS_ESI_UCLM_v2.*;
 import java.io.IOException;
 import java.util.*;
 
+/*********************************************************************
+*
+* Class Name: myGraphBuilder
+* Author/s name: PC, RCR, LD - Group 02
+* Release/Creation date: 07/12/2025
+* Class description: main class for assignment 04
+*
+**********************************************************************/
 public class myGraphBuilder {
     static final String PATH = "C:\\Users\\pcama\\Desktop\\Curso25-26\\Primer Cuatrimestre\\EDA\\Assignment05\\assign05\\bikeways.csv"; //Path to .csv
     private static final Scanner input = new Scanner(System.in);
@@ -43,7 +51,17 @@ public class myGraphBuilder {
         }
 
     }
-
+    /*********************************************************************
+    *
+    * Method Name: subdivideLists
+    * Name of the original author: PC
+    * Description of the Method: Subdivides original list into two, depending on which day 
+    * and stage the artists play in
+    * Calling arguments: LinkedList<Artist> that will be subdivided
+    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
+    * Required files: artist.csv must be opened
+    *
+    ***********************************************************************/
     public static void addToGraph(BikewaySegment segment, Graph g){
         Edge<BikewaySegment> bikeSegment;
         Vertex<Intersection> startPoint, endPoint;
@@ -58,7 +76,17 @@ public class myGraphBuilder {
         bikeSegment.setDecorator(new Decorator<BikewaySegment>(segment) {}); //El {} implica que es anónimo
 
     }
-
+    /*********************************************************************
+    *
+    * Method Name: subdivideLists
+    * Name of the original author: PC
+    * Description of the Method: Subdivides original list into two, depending on which day 
+    * and stage the artists play in
+    * Calling arguments: LinkedList<Artist> that will be subdivided
+    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
+    * Required files: artist.csv must be opened
+    *
+    ***********************************************************************/
     public static void processOptions(Graph g){
         String entrada;
         boolean finished = false;
@@ -82,7 +110,17 @@ public class myGraphBuilder {
             }
         }
     }
-
+    /*********************************************************************
+    *
+    * Method Name: subdivideLists
+    * Name of the original author: PC
+    * Description of the Method: Subdivides original list into two, depending on which day 
+    * and stage the artists play in
+    * Calling arguments: LinkedList<Artist> that will be subdivided
+    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
+    * Required files: artist.csv must be opened
+    *
+    ***********************************************************************/
     public static int gradoVertice(Graph g, int limit){
         //Searches all nodes of the graph and counts how many are greater than a certain parameter
         int degGreater = 0;
@@ -104,7 +142,17 @@ public class myGraphBuilder {
         }
         return degGreater;
     }
-
+    /*********************************************************************
+    *
+    * Method Name: subdivideLists
+    * Name of the original author: PC
+    * Description of the Method: Subdivides original list into two, depending on which day 
+    * and stage the artists play in
+    * Calling arguments: LinkedList<Artist> that will be subdivided
+    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
+    * Required files: artist.csv must be opened
+    *
+    ***********************************************************************/
     public static void showMenu(){
         System.out.printf("--OPTIONS--\n");
         System.out.printf("b <lat,long> <lat,long>: Finds shortest path between the given coordinates. \n");
@@ -115,7 +163,17 @@ public class myGraphBuilder {
         System.out.printf("e: Exits the program. \n");
         System.out.printf("-----------\n");
     }
-
+    /*********************************************************************
+    *
+    * Method Name: subdivideLists
+    * Name of the original author: PC
+    * Description of the Method: Subdivides original list into two, depending on which day 
+    * and stage the artists play in
+    * Calling arguments: LinkedList<Artist> that will be subdivided
+    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
+    * Required files: artist.csv must be opened
+    *
+    ***********************************************************************/
     public static boolean displayMenu(Graph g, char option, Intersection coord1, Intersection coord2, boolean finished) {
         switch (option) {
             case 'b':
@@ -146,7 +204,17 @@ public class myGraphBuilder {
         }
         return finished;
     }
-
+    /*********************************************************************
+    *
+    * Method Name: subdivideLists
+    * Name of the original author: PC
+    * Description of the Method: Subdivides original list into two, depending on which day 
+    * and stage the artists play in
+    * Calling arguments: LinkedList<Artist> that will be subdivided
+    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
+    * Required files: artist.csv must be opened
+    *
+    ***********************************************************************/
     public static List BFS(Graph gp, Intersection start, Intersection finish){
 
         Vertex<Intersection> s = gp.getVertex(start.getID());
@@ -203,6 +271,17 @@ public class myGraphBuilder {
 
         return path;
     }
+    /*********************************************************************
+    *
+    * Method Name: subdivideLists
+    * Name of the original author: PC
+    * Description of the Method: Subdivides original list into two, depending on which day 
+    * and stage the artists play in
+    * Calling arguments: LinkedList<Artist> that will be subdivided
+    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
+    * Required files: artist.csv must be opened
+    *
+    ***********************************************************************/
     public static void displayPath(Graph g, List<Vertex> path) {
         if (path == null || path.isEmpty()) {
             System.out.println("Path not found");
@@ -243,7 +322,17 @@ public class myGraphBuilder {
             System.out.println(surface);
         }
     }
-
+    /*********************************************************************
+    *
+    * Method Name: subdivideLists
+    * Name of the original author: PC
+    * Description of the Method: Subdivides original list into two, depending on which day 
+    * and stage the artists play in
+    * Calling arguments: LinkedList<Artist> that will be subdivided
+    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
+    * Required files: artist.csv must be opened
+    *
+    ***********************************************************************/
     private static Edge<BikewaySegment> findEdgeBetween(Graph g, Vertex u, Vertex v) {
         Iterator<Edge<BikewaySegment>> it = g.incidentEdges(u);
         while (it.hasNext()) {
@@ -306,7 +395,17 @@ public class myGraphBuilder {
         System.out.println("Edges: " + g.getM());
     }
     
-    
+    /*********************************************************************
+    *
+    * Method Name: subdivideLists
+    * Name of the original author: PC
+    * Description of the Method: Subdivides original list into two, depending on which day 
+    * and stage the artists play in
+    * Calling arguments: LinkedList<Artist> that will be subdivided
+    * Return value: Returns two lists, one for main stage artists and the other for river stage ones
+    * Required files: artist.csv must be opened
+    *
+    ***********************************************************************/
     private static BikewaySegment createVirtualSegment(int id, double length) {
         BikewaySegment virtual = new BikewaySegment();
         virtual.ID = id;
