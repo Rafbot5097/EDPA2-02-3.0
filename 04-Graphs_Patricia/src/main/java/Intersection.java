@@ -4,8 +4,8 @@ import graphsDS_ESI_UCLM_v2.Identity;
  * 
  * Class Name: Intersection
  * Author/s name: PC, RCR, LD - Group 02
- * Release/Creation date: 12/12/2025
- * Class description: Represents an intersection in the bikeway network identified by coordinates.
+ * Release/Creation date: 01/12/2025
+ * Class description: Represents an intersection in the bikeway network identified by its coordinates.
  * 
 ***************************************************************************************************
 */

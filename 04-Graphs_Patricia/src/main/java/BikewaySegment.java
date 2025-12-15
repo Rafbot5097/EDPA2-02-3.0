@@ -7,7 +7,7 @@ import java.math.RoundingMode;
  * 
  * Class Name: BikewaySegment
  * Author/s name: PC, RCR, LD - Group 02
- * Release/Creation date: 11/12/2025
+ * Release/Creation date: 03/12/2025
  * Class description: Represents a bikeway segment with all its properties 
  * 
 ***************************************************************************************************

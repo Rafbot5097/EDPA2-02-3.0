@@ -6,7 +6,7 @@ import java.util.*;
  * 
  * Class Name: myGraphBuilder
  * Author/s name: PC, RCR, LD - Group 02
- * Release/Creation date: 13/12/2025
+ * Release/Creation date: 27/11/2025
  * Class description: Main class for assignment 04. Builds a graph from bikeway data
  * 
 ***************************************************************************************************
@@ -24,7 +24,7 @@ public class myGraphBuilder {
      * builds graph, displays statistics and displays the menu
      * Calling arguments: String[] args 
      * Return value: void
-     * Required files: bikeways2.csv 
+     * Required files: bikeways.csv 
      * 
     ***************************************************************************************************
     */
@@ -88,7 +88,8 @@ public class myGraphBuilder {
         endPoint = g.insertVertex(ePoint);
 
         bikeSegment = g.insertEdge(startPoint, endPoint);
-        bikeSegment.setDecorator(new Decorator<BikewaySegment>(segment) {}); //El {} implica que es anónimo
+        //{} implies anonymous
+        bikeSegment.setDecorator(new Decorator<BikewaySegment>(segment) {}); 
 
     }
     /**************************************************************************************************
@@ -142,7 +143,8 @@ public class myGraphBuilder {
      * 
      * Method Name: degreeVertex
      * Name of the original author: LD
-     * Description of the Method: Searches all nodes of the graph and counts how many are greater than a certain parameter
+     * Description of the Method: Searches all nodes of the graph and counts the nodes which degree is greater 
+     * than a certain parameter
      * Calling arguments: Graph g, int limit 
      * Return value: int 
      * Required files: None
@@ -174,7 +176,7 @@ public class myGraphBuilder {
      * 
      * Method Name: showMenu
      * Name of the original author: RCR
-     * Description of the Method: Displays the interactive menu with available path-finding options
+     * Description of the Method: Displays the menu with the path finding options
      * Calling arguments: None
      * Return value: void
      * Required files: None
@@ -247,6 +249,7 @@ public class myGraphBuilder {
      * Method Name: DFS
      * Name of the original author: PC, RCR, LD
      * Description of the Method: Performs Depth-First Search to find a path between two intersections.
+     * Selecting the ones whose speedlimit = 30 km/h
      * Calling arguments: Graph gp, Intersection start, Intersection finish 
      * Return value: List<Vertex>, null
      * Required files: None
